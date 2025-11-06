@@ -207,15 +207,21 @@ After analysis completes (10-30 seconds):
 2. Check that environment variables are correct
 3. Restart the dev server
 
-### Resume Upload Fails
+### Resume Upload Fails (Storage RLS Error)
 
-**Problem**: Upload fails or parsing errors
+**Problem**: Getting "new row violates row-level security policy" (403 error)
 
 **Solution**:
-1. Make sure file is PDF and under 10MB
-2. Check Supabase storage bucket is created
-3. Verify storage policies are set correctly
-4. Check browser console for errors
+⚠️ **This is the most common issue!** See **STORAGE_SETUP.md** for complete fix.
+
+**Quick Fix:**
+1. Go to Supabase Dashboard → Storage
+2. Make sure `resumes` bucket exists and is PRIVATE
+3. Go to SQL Editor and run the script from `supabase/migrations/002_storage_policies.sql`
+4. Restart your dev server
+5. Try uploading again
+
+**Detailed Guide:** Read **STORAGE_SETUP.md** for step-by-step instructions.
 
 ### OpenAI API Errors
 
