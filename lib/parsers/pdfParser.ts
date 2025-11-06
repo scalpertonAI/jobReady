@@ -8,9 +8,9 @@
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
-    // Dynamic import to work with Next.js App Router
-    const pdf = (await import('pdf-parse')).default;
-    const data = await pdf(buffer);
+    // Use require for CommonJS module in Node.js environment
+    const pdfParse = require('pdf-parse');
+    const data = await pdfParse(buffer);
     return data.text;
   } catch (error) {
     console.error('PDF parsing error:', error);
