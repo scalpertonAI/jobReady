@@ -3,13 +3,13 @@
  * Extracts text content from PDF files
  */
 
-import pdf from 'pdf-parse';
-
 /**
  * Extract text from PDF buffer
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
+    // Dynamic import to work with Next.js App Router
+    const pdf = (await import('pdf-parse')).default;
     const data = await pdf(buffer);
     return data.text;
   } catch (error) {
