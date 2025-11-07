@@ -1,47 +1,24 @@
 /**
  * PDF Parser Utility
- * Extracts text content from PDF files using Mozilla's PDF.js
- * Using legacy build for Node.js compatibility (no DOM dependencies)
+ * Extracts text content from PDF files using unpdf
+ * Pure Node.js library with no canvas/DOM dependencies
  */
 
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { extractText } from 'unpdf';
 
 /**
  * Extract text from PDF buffer
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
-    // Convert Buffer to Uint8Array for pdfjs-dist
-    const uint8Array = new Uint8Array(buffer);
+    // unpdf works directly with buffers - no canvas dependencies!
+    const { text, totalPages } = await extractText(buffer);
 
-    // Load the PDF document
-    const loadingTask = pdfjsLib.getDocument({
-      data: uint8Array,
-      useSystemFonts: true,
-      isEvalSupported: false,
-    });
-
-    const pdf = await loadingTask.promise;
-    const textContent: string[] = [];
-
-    // Extract text from each page
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      const page = await pdf.getPage(pageNum);
-      const content = await page.getTextContent();
-
-      // Combine all text items from the page
-      const pageText = content.items
-        .map((item: any) => {
-          // Handle both string items and object items with 'str' property
-          if (typeof item === 'string') return item;
-          return item.str || '';
-        })
-        .join(' ');
-
-      textContent.push(pageText);
+    if (!text || text.trim().length === 0) {
+      throw new Error('No text content found in PDF');
     }
 
-    return textContent.join('\n\n');
+    return text;
   } catch (error) {
     console.error('PDF parsing error:', error);
     throw new Error('Failed to extract text from PDF');
