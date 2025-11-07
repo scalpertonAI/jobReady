@@ -15,16 +15,30 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
     const uint8Array = new Uint8Array(buffer);
 
     // Extract text from PDF - no canvas dependencies!
-    const { text, totalPages } = await extractText(uint8Array);
+    const result = await extractText(uint8Array);
 
-    if (!text || text.trim().length === 0) {
+    // unpdf returns text as an array of strings, one per page
+    let extractedText = '';
+
+    if (Array.isArray(result.text)) {
+      // Join all pages with double newlines
+      extractedText = result.text.join('\n\n');
+    } else if (typeof result.text === 'string') {
+      extractedText = result.text;
+    } else {
+      // Handle any other format by converting to string
+      extractedText = String(result.text || '');
+    }
+
+    // Check if we got any text
+    if (!extractedText || extractedText.trim().length === 0) {
       throw new Error('No text content found in PDF');
     }
 
-    return text;
+    return extractedText;
   } catch (error) {
     console.error('PDF parsing error:', error);
-    throw new Error('Failed to extract text from PDF');
+    throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
