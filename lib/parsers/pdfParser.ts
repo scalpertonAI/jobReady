@@ -1,13 +1,10 @@
 /**
  * PDF Parser Utility
  * Extracts text content from PDF files using Mozilla's PDF.js
+ * Using legacy build for Node.js compatibility (no DOM dependencies)
  */
 
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure PDF.js worker (required for parsing)
-// Using legacy build for Node.js compatibility
-pdfjsLib.GlobalWorkerOptions.workerSrc = require.resolve('pdfjs-dist/build/pdf.worker.mjs');
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 /**
  * Extract text from PDF buffer
