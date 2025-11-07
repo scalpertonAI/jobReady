@@ -11,8 +11,11 @@ import { extractText } from 'unpdf';
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
-    // unpdf works directly with buffers - no canvas dependencies!
-    const { text, totalPages } = await extractText(buffer);
+    // unpdf requires Uint8Array, so convert Buffer to Uint8Array
+    const uint8Array = new Uint8Array(buffer);
+
+    // Extract text from PDF - no canvas dependencies!
+    const { text, totalPages } = await extractText(uint8Array);
 
     if (!text || text.trim().length === 0) {
       throw new Error('No text content found in PDF');
