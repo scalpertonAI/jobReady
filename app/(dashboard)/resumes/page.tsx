@@ -93,6 +93,9 @@ export default async function ResumesPage() {
                       </span>
                     )}
                     <div className="flex gap-2 mt-2">
+                      <Link href={`/resumes/${resume.id}/optimize`}>
+                        <Button variant="primary" size="sm">✨ Optimize</Button>
+                      </Link>
                       <Button variant="outline" size="sm">View</Button>
                       <Button variant="ghost" size="sm">Delete</Button>
                     </div>
