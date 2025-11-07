@@ -2,11 +2,12 @@
 
 /**
  * Resume Uploader Component
- * Drag-and-drop or click to upload resume
+ * Drag-and-drop or click to upload resume with enhanced UX
  */
 
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/shared/Button';
+import { useToast } from '@/components/shared/Toast';
 
 interface ResumeUploaderProps {
   onUploadSuccess?: (resume: any) => void;
@@ -14,11 +15,13 @@ interface ResumeUploaderProps {
 }
 
 export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploaderProps) {
+  const { showToast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
+  const [uploadStage, setUploadStage] = useState<string>('');
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -38,10 +41,12 @@ export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploade
     if (droppedFile && droppedFile.type === 'application/pdf') {
       setFile(droppedFile);
       setError('');
+      showToast('success', `${droppedFile.name} selected`, 2000);
     } else {
       setError('Please upload a PDF file');
+      showToast('error', 'Only PDF files are supported');
     }
-  }, []);
+  }, [showToast]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -49,8 +54,10 @@ export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploade
       if (selectedFile.type === 'application/pdf') {
         setFile(selectedFile);
         setError('');
+        showToast('success', `${selectedFile.name} selected`, 2000);
       } else {
         setError('Please upload a PDF file');
+        showToast('error', 'Only PDF files are supported');
       }
     }
   };
@@ -61,16 +68,30 @@ export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploade
     setIsUploading(true);
     setUploadProgress(0);
     setError('');
+    setUploadStage('Uploading file...');
 
     try {
       const formData = new FormData();
       formData.append('resume', file);
       formData.append('isPrimary', 'true');
 
-      // Simulate progress (since we can't track actual upload progress easily)
+      // Enhanced progress simulation with stages
+      const stages = [
+        { progress: 20, message: 'Uploading file...' },
+        { progress: 40, message: 'Extracting PDF text...' },
+        { progress: 60, message: 'AI analyzing resume...' },
+        { progress: 80, message: 'Extracting skills & experience...' },
+        { progress: 90, message: 'Finalizing...' },
+      ];
+
+      let stageIndex = 0;
       const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => Math.min(prev + 10, 90));
-      }, 200);
+        if (stageIndex < stages.length) {
+          setUploadProgress(stages[stageIndex].progress);
+          setUploadStage(stages[stageIndex].message);
+          stageIndex++;
+        }
+      }, 1000);
 
       const response = await fetch('/api/resumes/upload', {
         method: 'POST',
@@ -79,6 +100,7 @@ export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploade
 
       clearInterval(progressInterval);
       setUploadProgress(100);
+      setUploadStage('Complete!');
 
       const data = await response.json();
 
@@ -87,6 +109,7 @@ export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploade
       }
 
       // Success
+      showToast('success', '🎉 Resume uploaded and parsed successfully!');
       setFile(null);
       if (onUploadSuccess) {
         onUploadSuccess(data.data);
@@ -94,12 +117,14 @@ export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploade
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed';
       setError(errorMessage);
+      showToast('error', `Upload failed: ${errorMessage}`);
       if (onUploadError) {
         onUploadError(errorMessage);
       }
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+      setUploadStage('');
     }
   };
 
@@ -168,20 +193,24 @@ export function ResumeUploader({ onUploadSuccess, onUploadError }: ResumeUploade
 
       {/* Upload Progress */}
       {isUploading && (
-        <div className="mt-6">
+        <div className="mt-6 animate-fade-in">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-gray-600">Uploading and parsing...</span>
-            <span className="font-medium text-indigo-600">{uploadProgress}%</span>
+            <span className="text-gray-700 font-medium">{uploadStage}</span>
+            <span className="font-bold text-indigo-600">{uploadProgress}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div
-              className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-3 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            We're extracting text and analyzing your resume with AI...
-          </p>
+          <div className="mt-3 flex items-center text-sm text-gray-600">
+            <svg className="animate-spin h-4 w-4 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>This usually takes 5-10 seconds...</span>
+          </div>
         </div>
       )}
 

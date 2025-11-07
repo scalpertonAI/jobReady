@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ToastProvider } from "@/components/shared/Toast";
 
 export const metadata: Metadata = {
   title: "JobReady.AI - AI-Powered Interview Preparation",
@@ -13,8 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        {children}
+      <body className="antialiased bg-gray-50">
+        <ToastProvider>
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );
