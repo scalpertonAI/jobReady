@@ -204,17 +204,40 @@ Provide honest, actionable feedback. Calculate match_percentage based on:
 
 /**
  * Preparation Plan Generation Prompt
+ *
+ * IMPORTANT: Plans now use CURATED REAL questions from our database,
+ * not AI-generated ones. This provides actual value to users.
  */
 export function getPreparationPlanPrompt(
   matchAnalysis: any,
+  curatedQuestions: any[], // Real questions from our database
   durationDays: number = 30
 ): string {
-  return `You are an expert career coach and technical interviewer. Create an EXTREMELY COMPREHENSIVE ${durationDays}-day preparation plan that will GUARANTEE interview success for this candidate.
+  const questionsList = curatedQuestions.map((q, i) => `
+${i + 1}. ${q.title} (${q.difficulty})
+   - Companies: ${q.companies.slice(0, 3).join(', ')}
+   - Category: ${q.category}
+   - Pattern: ${q.pattern}
+   - LeetCode: ${q.leetcode_url}
+   - Frequency: ${q.frequency}
+  `).join('\n');
+
+  return `You are an expert career coach. Create a ${durationDays}-day preparation plan using these REAL interview questions that companies actually ask.
 
 JOB MATCH ANALYSIS:
 ${JSON.stringify(matchAnalysis, null, 2)}
 
-IMPORTANT: This plan must include EVERYTHING needed to succeed - detailed content, coding problems with solutions, system design topics, learning modules with examples, practice exercises, and more. Leave NOTHING out.
+REAL INTERVIEW QUESTIONS (${curatedQuestions.length} curated questions):
+These are proven questions from Blind 75, NeetCode 150, and top companies.
+${questionsList}
+
+CRITICAL INSTRUCTIONS:
+- Use ONLY these real questions in your daily_tasks
+- Reference questions by their exact titles
+- Order questions from easier to harder
+- Group similar patterns together
+- Each daily task should include 1-3 questions
+- Include the LeetCode link and NeetCode video when available
 
 Create a detailed preparation plan in JSON format:
 {
