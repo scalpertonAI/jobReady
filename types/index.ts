@@ -170,6 +170,9 @@ export interface PreparationPlan {
   resources: LearningResource[];
   mock_interview_questions: MockInterviewQuestions;
   milestones: Milestone[];
+  coding_problems?: CodingProblem[];
+  system_design_topics?: SystemDesignTopic[];
+  learning_modules?: LearningModule[];
 }
 
 export interface PlanOverview {
@@ -245,6 +248,73 @@ export interface Milestone {
   title: string;
   description: string;
   xp_reward: number;
+}
+
+export interface CodingProblem {
+  id: string;
+  title: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  category: string;
+  problem_statement: string;
+  examples: {
+    input: string;
+    output: string;
+    explanation?: string;
+  }[];
+  constraints: string[];
+  hints: string[];
+  solution_approach: string;
+  code_template?: string;
+  optimal_solution?: string;
+  time_complexity: string;
+  space_complexity: string;
+  related_topics: string[];
+  practice_day: number;
+}
+
+export interface SystemDesignTopic {
+  id: string;
+  title: string;
+  description: string;
+  key_concepts: string[];
+  components: {
+    name: string;
+    purpose: string;
+    considerations: string[];
+  }[];
+  scalability_considerations: string[];
+  trade_offs: string[];
+  example_systems: string[];
+  diagrams_description: string;
+  practice_day: number;
+}
+
+export interface LearningModule {
+  id: string;
+  title: string;
+  skill: string;
+  day: number;
+  content: {
+    theory: string;
+    key_points: string[];
+    code_examples: {
+      title: string;
+      code: string;
+      explanation: string;
+    }[];
+    practice_exercises: {
+      question: string;
+      difficulty: 'easy' | 'medium' | 'hard';
+      solution_hint: string;
+    }[];
+  };
+  duration_minutes: number;
+  quiz: {
+    question: string;
+    options: string[];
+    correct_answer: number;
+    explanation: string;
+  }[];
 }
 
 // ============================================

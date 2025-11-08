@@ -209,10 +209,12 @@ export function getPreparationPlanPrompt(
   matchAnalysis: any,
   durationDays: number = 30
 ): string {
-  return `You are an expert career coach. Create a comprehensive ${durationDays}-day preparation plan for this candidate.
+  return `You are an expert career coach and technical interviewer. Create an EXTREMELY COMPREHENSIVE ${durationDays}-day preparation plan that will GUARANTEE interview success for this candidate.
 
 JOB MATCH ANALYSIS:
 ${JSON.stringify(matchAnalysis, null, 2)}
+
+IMPORTANT: This plan must include EVERYTHING needed to succeed - detailed content, coding problems with solutions, system design topics, learning modules with examples, practice exercises, and more. Leave NOTHING out.
 
 Create a detailed preparation plan in JSON format:
 {
@@ -293,18 +295,104 @@ Create a detailed preparation plan in JSON format:
       "description": "milestone description",
       "xp_reward": number (200-500)
     }
+  ],
+  "coding_problems": [
+    {
+      "id": "unique_id",
+      "title": "Problem title",
+      "difficulty": "easy/medium/hard",
+      "category": "Arrays/Strings/Trees/DP/etc",
+      "problem_statement": "Detailed problem description with clear requirements",
+      "examples": [
+        {
+          "input": "sample input",
+          "output": "expected output",
+          "explanation": "why this is the output"
+        }
+      ],
+      "constraints": ["list of constraints like time/space limits"],
+      "hints": ["hint 1", "hint 2", "hint 3"],
+      "solution_approach": "Step-by-step approach to solve the problem",
+      "code_template": "starter code template",
+      "optimal_solution": "complete working solution with comments",
+      "time_complexity": "O(n) etc",
+      "space_complexity": "O(1) etc",
+      "related_topics": ["related concepts"],
+      "practice_day": number (which day to practice this)
+    }
+  ],
+  "system_design_topics": [
+    {
+      "id": "unique_id",
+      "title": "System design topic (e.g., Design Twitter, Design URL Shortener)",
+      "description": "Detailed description of what needs to be designed",
+      "key_concepts": ["concept 1", "concept 2"],
+      "components": [
+        {
+          "name": "component name",
+          "purpose": "what it does",
+          "considerations": ["things to think about"]
+        }
+      ],
+      "scalability_considerations": ["how to scale", "bottlenecks"],
+      "trade_offs": ["trade-off discussions"],
+      "example_systems": ["real-world examples"],
+      "diagrams_description": "text description of architecture diagram",
+      "practice_day": number
+    }
+  ],
+  "learning_modules": [
+    {
+      "id": "unique_id",
+      "title": "Module title",
+      "skill": "skill being taught",
+      "day": number,
+      "content": {
+        "theory": "Detailed theoretical explanation with examples",
+        "key_points": ["key point 1", "key point 2"],
+        "code_examples": [
+          {
+            "title": "Example title",
+            "code": "complete working code",
+            "explanation": "line by line explanation"
+          }
+        ],
+        "practice_exercises": [
+          {
+            "question": "practice question",
+            "difficulty": "easy/medium/hard",
+            "solution_hint": "hint for solving"
+          }
+        ]
+      },
+      "duration_minutes": number,
+      "quiz": [
+        {
+          "question": "quiz question",
+          "options": ["option 1", "option 2", "option 3", "option 4"],
+          "correct_answer": index (0-3),
+          "explanation": "why this is correct"
+        }
+      ]
+    }
   ]
 }
 
-Guidelines:
-- Focus on missing/weak skills first
-- Include practical, hands-on tasks
-- Provide real resource URLs when possible
-- Balance learning, practice, and projects
-- Make daily tasks achievable (2-3 hours max)
-- Include rest/review days
-- Generate 10-15 relevant interview questions
-- Create 2-3 portfolio project suggestions`;
+CRITICAL GUIDELINES:
+- Generate AT LEAST 20-30 coding problems across all difficulty levels
+- Include DETAILED learning modules for EVERY missing/weak skill
+- Each learning module must have complete theory, examples, and practice
+- System design topics must include complete architecture discussions
+- Daily tasks must reference specific learning modules and coding problems
+- Provide COMPLETE code solutions with detailed explanations
+- Include 30+ technical interview questions with model answers
+- Make this plan so comprehensive that following it guarantees success
+- Every day should have specific, actionable content - no vague tasks
+- Include quiz questions to test understanding
+- Provide step-by-step approaches for solving problems
+- Cover all aspects: coding, system design, behavioral, projects
+- Missing skills get 2-3x more focus than matched skills
+- Include real URLs to high-quality free resources (YouTube, documentation, articles)`;
 }
 
 /**
